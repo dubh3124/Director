@@ -8,6 +8,10 @@ Director is recommended for first-class usage with AI agents. Let an agent scout
 
 The product is called Director. The npm package and repository slug remain `ai-recorder`, and the installed CLI command is `director`.
 
+## Demo Video
+
+Watch the [Director self-presentation video](https://github.com/dubh3124/Director/releases/download/v0.1.0-alpha.0/director-self-presentation.mp4), produced by Director from a Storyboard against this public repository.
+
 ## AI-First Usage
 
 Director is designed to be driven by AI as a normal operating mode, not only as a manual screen recorder.
