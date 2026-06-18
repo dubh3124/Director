@@ -1,0 +1,58 @@
+schemaVersion: "1"
+title: Voiceover Product Walkthrough
+# Set PRODUCT_DEMO_PATH to a route in your local app, for example:
+# PRODUCT_DEMO_PATH=dashboard
+app:
+  name: Local Product App
+  baseUrl: http://localhost:3000
+outputDir: .director/voiceover-product-walkthrough
+
+camera:
+  type: playwright
+  recordVideo: true
+
+voiceover:
+  provider: elevenlabs
+  apiKeyEnv: ELEVENLABS_API_KEY
+  voiceIdEnv: ELEVENLABS_VOICE_ID
+  modelId: eleven_multilingual_v2
+
+deck:
+  enabled: true
+  fileName: pitch-deck.pptx
+
+browser:
+  viewport:
+    width: 1440
+    height: 900
+
+timing:
+  defaultHoldMs: 500
+  transitionBufferMs: 150
+
+scenes:
+  - id: opening
+    title: Product Overview
+    shots:
+      - id: homepage
+        title: Homepage
+        voiceover: Start with the primary product surface and establish what the viewer is looking at.
+        stageDirections:
+          - type: goto
+            url: ${app.baseUrl}
+          - type: waitForSelector
+            selector: body
+          - type: capture
+            name: homepage
+
+      - id: primary-action
+        title: Primary Action
+        voiceover: Move to the main workflow or call to action and explain the user value in plain language.
+        holdMs: 700
+        stageDirections:
+          - type: goto
+            url: ${app.baseUrl}/${PRODUCT_DEMO_PATH}
+          - type: waitForSelector
+            selector: body
+          - type: capture
+            name: primary-action

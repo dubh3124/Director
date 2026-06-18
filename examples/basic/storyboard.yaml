@@ -1,0 +1,35 @@
+schemaVersion: "1"
+title: Basic Live App Walkthrough
+app:
+  name: Basic Live App
+  baseUrl: http://localhost:3000
+outputDir: .director/basic-live-app
+
+camera:
+  type: playwright
+  recordVideo: true
+
+voiceover:
+  provider: none
+
+deck:
+  enabled: true
+  fileName: pitch-deck.pptx
+
+timing:
+  defaultHoldMs: 500
+  transitionBufferMs: 150
+
+scenes:
+  - id: opening
+    title: Application Overview
+    shots:
+      - id: overview
+        title: Overview
+        stageDirections:
+          - type: goto
+            url: ${app.baseUrl}
+          - type: waitForSelector
+            selector: body
+          - type: capture
+            name: overview

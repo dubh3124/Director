@@ -1,0 +1,93 @@
+{
+  "name": "ai-recorder",
+  "version": "0.1.0-alpha.0",
+  "description": "Director: AI-first local system for producing live-app presentation videos and decks.",
+  "license": "MIT",
+  "author": "Herman Haggerty",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dubh3124/ai-recorder.git"
+  },
+  "homepage": "https://github.com/dubh3124/ai-recorder#readme",
+  "bugs": {
+    "url": "https://github.com/dubh3124/ai-recorder/issues"
+  },
+  "keywords": [
+    "ai-recorder",
+    "director",
+    "ai",
+    "ai-agents",
+    "playwright",
+    "mcp",
+    "a2a",
+    "presentation",
+    "demo",
+    "screen-recording",
+    "pitch-deck"
+  ],
+  "type": "module",
+  "bin": {
+    "director": "./dist/cli/director.js"
+  },
+  "files": [
+    "dist",
+    "docs",
+    "examples",
+    "README.md",
+    "CHANGELOG.md",
+    "LICENSE",
+    "SECURITY.md",
+    "CONTRIBUTING.md",
+    "CODE_OF_CONDUCT.md",
+    "AGENTS.md",
+    ".env.example"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./mcp": {
+      "types": "./dist/mcp/server.d.ts",
+      "default": "./dist/mcp/server.js"
+    },
+    "./a2a": {
+      "types": "./dist/a2a/server.d.ts",
+      "default": "./dist/a2a/server.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "vitest run",
+    "prepack": "npm run build",
+    "pack:dry": "npm pack --dry-run --json",
+    "release:check": "npm run typecheck && npm test && npm run build && npm audit --audit-level=moderate && npm run pack:dry",
+    "director": "tsx src/cli/director.ts",
+    "mcp": "tsx src/mcp/server.ts",
+    "a2a": "tsx src/a2a/server.ts"
+  },
+  "dependencies": {
+    "@elevenlabs/elevenlabs-js": "^2.48.0",
+    "@modelcontextprotocol/sdk": "^1.21.0",
+    "express": "^5.1.0",
+    "obs-websocket-js": "^5.0.8",
+    "playwright": "^1.60.0",
+    "pptxgenjs": "^4.0.1",
+    "yaml": "^2.9.0",
+    "zod": "^3.24.3"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.6",
+    "@types/node": "^20.19.25",
+    "tsx": "^4.22.3",
+    "typescript": "^5.9.3",
+    "vitest": "^4.1.9"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  }
+}
