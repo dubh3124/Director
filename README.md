@@ -10,7 +10,7 @@ The product is called Director. The npm package and repository slug remain `ai-r
 
 ## Demo Video
 
-Watch the [Director self-presentation video](https://dubh3124.github.io/Director/demo.html), produced by Director from a Storyboard against this public repository.
+https://github.com/user-attachments/assets/4163baf7-3bed-498d-96eb-9ce3b8514024
 
 ## AI-First Usage
 
