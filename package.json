@@ -6,11 +6,11 @@
   "author": "Herman Haggerty",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/dubh3124/ai-recorder.git"
+    "url": "git+https://github.com/dubh3124/Director.git"
   },
-  "homepage": "https://github.com/dubh3124/ai-recorder#readme",
+  "homepage": "https://github.com/dubh3124/Director#readme",
   "bugs": {
-    "url": "https://github.com/dubh3124/ai-recorder/issues"
+    "url": "https://github.com/dubh3124/Director/issues"
   },
   "keywords": [
     "ai-recorder",
