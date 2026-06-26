@@ -111,6 +111,47 @@ describe("A2A Director server", () => {
     });
   });
 
+  it("isolates tasks between server instances", async () => {
+    const appA = createDirectorA2AServer({
+      dependencies: {
+        draftStoryboard: async () => storyboard,
+        writeStoryboard: vi.fn(async () => undefined),
+      },
+    });
+    const appB = createDirectorA2AServer({
+      dependencies: {
+        draftStoryboard: async () => storyboard,
+        writeStoryboard: vi.fn(async () => undefined),
+      },
+    });
+
+    await withServer(appA, async (baseUrlA) => {
+      await withServer(appB, async (baseUrlB) => {
+        // Send a task to server A only
+        await sendJsonRpc(baseUrlA, "SendMessage", {
+          skill: "draft_storyboard",
+          payload: { title: "Sample App", appUrl: "https://example.test" },
+        });
+
+        // Server A should have 1 task
+        const listA = await sendJsonRpc<{ readonly result: { readonly tasks: readonly unknown[] } }>(
+          baseUrlA,
+          "ListTasks",
+          {},
+        );
+        expect(listA.result.tasks).toHaveLength(1);
+
+        // Server B should have 0 tasks
+        const listB = await sendJsonRpc<{ readonly result: { readonly tasks: readonly unknown[] } }>(
+          baseUrlB,
+          "ListTasks",
+          {},
+        );
+        expect(listB.result.tasks).toHaveLength(0);
+      });
+    });
+  });
+
   it("completes an approved premiere task and exposes artifact paths", async () => {
     const paths = makeProductionPaths();
     const app = createDirectorA2AServer({

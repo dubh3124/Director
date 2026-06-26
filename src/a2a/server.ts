@@ -88,7 +88,9 @@ const defaultDirectorA2ADependencies: DirectorA2ADependencies = {
   getProductionPaths,
 };
 
-const tasks = new Map<string, A2ATask>();
+type TaskStore = Map<string, A2ATask>;
+
+const MAX_TASKS = 1000;
 
 export type A2AAdapterOptions = {
   readonly port?: number;
@@ -101,6 +103,7 @@ export function createDirectorA2AServer(options: A2AAdapterOptions = {}): expres
   const port = options.port ?? Number(process.env.DIRECTOR_A2A_PORT ?? 4129);
   const baseUrl = options.baseUrl ?? process.env.DIRECTOR_A2A_BASE_URL ?? `http://localhost:${port}`;
   const dependencies: DirectorA2ADependencies = { ...defaultDirectorA2ADependencies, ...options.dependencies };
+  const tasks: TaskStore = new Map();
 
   app.use(express.json({ limit: "2mb" }));
 
@@ -111,7 +114,7 @@ export function createDirectorA2AServer(options: A2AAdapterOptions = {}): expres
   app.post("/a2a", async (request, response) => {
     const body = request.body as { readonly id?: unknown; readonly method?: unknown; readonly params?: unknown };
     try {
-      const result = await handleJsonRpc(String(body.method ?? ""), body.params, dependencies);
+      const result = await handleJsonRpc(String(body.method ?? ""), body.params, dependencies, tasks);
       response.json({ jsonrpc: "2.0", id: body.id ?? null, result });
     } catch (error) {
       response.status(400).json({
@@ -143,10 +146,11 @@ async function handleJsonRpc(
   method: string,
   params: unknown,
   dependencies: DirectorA2ADependencies,
+  tasks: TaskStore,
 ): Promise<unknown> {
   switch (method) {
     case "SendMessage":
-      return { task: await createAndRunTask(extractTaskInput(params), dependencies) };
+      return { task: await createAndRunTask(extractTaskInput(params), dependencies, tasks) };
     case "GetTask": {
       const taskId = extractTaskId(params);
       const task = tasks.get(taskId);
@@ -168,7 +172,15 @@ async function handleJsonRpc(
   }
 }
 
-async function createAndRunTask(input: DirectorTaskInput, dependencies: DirectorA2ADependencies): Promise<A2ATask> {
+function evictOldest(tasks: TaskStore, max: number): void {
+  while (tasks.size > max) {
+    const oldest = tasks.keys().next().value;
+    if (oldest === undefined) break;
+    tasks.delete(oldest);
+  }
+}
+
+async function createAndRunTask(input: DirectorTaskInput, dependencies: DirectorA2ADependencies, tasks: TaskStore): Promise<A2ATask> {
   const id = crypto.randomUUID();
   const contextId = crypto.randomUUID();
   const submitted = makeTask(
@@ -180,6 +192,7 @@ async function createAndRunTask(input: DirectorTaskInput, dependencies: Director
     { skill: input.skill },
   );
   tasks.set(id, submitted);
+  evictOldest(tasks, MAX_TASKS);
 
   const working = updateTask(submitted, "TASK_STATE_WORKING", `Director is working on ${input.skill}.`, []);
   tasks.set(id, working);
